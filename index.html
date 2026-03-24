@@ -41,12 +41,24 @@
   </main>
 
   <!-- Modal container for movie details -->
-  <div id="movie-modal" class="modal">
-    <div class="modal-content">
-      <div id="modal-movie-details"></div>
+  <!-- Movie Details Modal -->
+<div id="movie-modal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <div class="modal-body">
+      <img id="modal-poster" src="" alt="Movie Poster">
+      <div class="modal-info">
+        <h2 id="modal-title"></h2>
+        <p><strong>Year:</strong> <span id="modal-year"></span></p>
+        <p><strong>Rated:</strong> <span id="modal-rated"></span></p>
+        <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+        <p><strong>Director:</strong> <span id="modal-director"></span></p>
+        <p><strong>Cast:</strong> <span id="modal-actors"></span></p>
+        <p><strong>Plot:</strong> <span id="modal-plot"></span></p>
+      </div>
     </div>
   </div>
-
+</div>
   <footer>
     <p>Powered by <a href="https://www.omdbapi.com/" target="_blank">OMDB API</a></p>
   </footer>

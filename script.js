@@ -7,9 +7,88 @@ const watchlistContainer = document.getElementById('watchlist');
 
 const apiKey = 'your-api-key'; // Replace with your OMDb API key
 
+// Select modal elements
 const modal = document.getElementById('movie-modal');
-const modalContent = document.getElementById('modal-movie-details');
+const modalClose = document.querySelector('.modal-close');
+const modalPoster = document.getElementById('modal-poster');
+const modalTitle = document.getElementById('modal-title');
+const modalYear = document.getElementById('modal-year');
+const modalRated = document.getElementById('modal-rated');
+const modalGenre = document.getElementById('modal-genre');
+const modalDirector = document.getElementById('modal-director');
+const modalActors = document.getElementById('modal-actors');
+const modalPlot = document.getElementById('modal-plot');
 
+// Function to fetch and show full movie details
+function showMovieDetails(imdbID) {
+  fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&plot=full`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      if (data.Response === "True") {
+        modalPoster.src = data.Poster !== 'N/A' ? data.Poster : 'https://via.placeholder.com/300x450?text=No+Image';
+        modalTitle.textContent = data.Title;
+        modalYear.textContent = data.Year;
+        modalRated.textContent = data.Rated;
+        modalGenre.textContent = data.Genre;
+        modalDirector.textContent = data.Director;
+        modalActors.textContent = data.Actors;
+        modalPlot.textContent = data.Plot;
+        modal.style.display = 'block';
+      } else {
+        alert('Movie details not found.');
+      }
+    })
+    .catch(err => {
+      console.error('Details fetch error:', err);
+      alert('Error fetching movie details. Try again later.');
+    });
+}
+
+// Close modal
+modalClose.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+// Close modal on clicking outside content
+window.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+// Example: Update renderMovies to include Details button
+function renderMovies(movies) {
+  movieResults.innerHTML = '';
+  movies.forEach(movie => {
+    const isInWatchlist = watchlist.some(w => w.imdbID === movie.imdbID);
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    card.innerHTML = `
+      <div class="movie-info">
+        <button class="btn-details">Details</button>
+        <button class="btn ${isInWatchlist ? 'btn-remove' : ''}">
+          ${isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+        </button>
+      </div>
+      <img class="movie-poster" src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image'}" alt="${movie.Title}">
+      <div class="movie-info">
+        <h3 class="movie-title">${movie.Title}</h3>
+        <p class="movie-year">${movie.Year}</p>
+      </div>
+    `;
+
+    const detailsBtn = card.querySelector('.btn-details');
+    detailsBtn.addEventListener('click', () => showMovieDetails(movie.imdbID));
+
+    const watchBtn = card.querySelector('.btn');
+    watchBtn.addEventListener('click', () => toggleWatchlist(movie, watchBtn));
+
+    movieResults.appendChild(card);
+  });
+}
 // Function to fetch movies from the OMDb API
 async function fetchMovies(query) {
   const url = `https://www.omdbapi.com/?s=${query}&apikey=${apiKey}`;
